@@ -11,9 +11,10 @@ function App() {
     const timeRef = useRef<HTMLSelectElement>(null);
     const workTypeRef = useRef<HTMLSelectElement>(null);
     const workPlaceRef = useRef<HTMLSelectElement>(null);
-    const skillRefs = useRef<{ [key: string]: HTMLInputElement }>({});
+    const skillRefs = useRef<Record<string, HTMLInputElement>>({});
     const [vacancies, setVacancies] = useState<any[]>([]);
     const [showAllSkills, setShowAllSkills] = useState(false);
+
     const skillsList = [
         "Frontend",
         "Senior",
@@ -39,7 +40,7 @@ function App() {
         }
     }, []);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if (!logoRef.current?.value) {
@@ -81,7 +82,9 @@ function App() {
         localStorage.setItem("vacancies", JSON.stringify(updatedVacancies));
 
         toast.success("Vakansiya muvaffaqiyatli qo'shildi!");
-        e.currentTarget.reset();
+        if (e.target instanceof HTMLFormElement) {
+            e.target.reset();
+        }
     };
 
     return (
@@ -225,7 +228,7 @@ function App() {
 
             <ToastContainer />
 
-            <div className="mt-10 w-[700px] mx-auto">
+            <div className="mt-10 w-[850px] mx-auto">
                 <h2 className="text-2xl font-bold mb-5">
                     Vakansiyalar ro'yxati
                 </h2>
@@ -238,35 +241,27 @@ function App() {
                             <img
                                 src={vacancy.logo || "/placeholder-logo.png"}
                                 alt={vacancy.company}
-                                className="w-16 h-16 object-cover object-center rounded-full transition-all duration-300"
+                                className="w-12 h-12"
                             />
-
                             <div>
                                 <p className="font-bold">{vacancy.company}</p>
-                                {vacancy.isNew && (
-                                    <span className="bg-teal-500 text-white text-xs px-2 py-1 rounded-full">
-                                        NEW!
-                                    </span>
-                                )}
-                                <h3 className="font-bold text-lg">
-                                    {vacancy.position}
-                                </h3>
-                                <p className="text-gray-600">
-                                    {vacancy.time} - {vacancy.workType} -{" "}
+                                <p>{vacancy.position}</p>
+                                <p className="text-gray-500 text-sm">
+                                    {vacancy.time} • {vacancy.workType} •{" "}
                                     {vacancy.workPlace}
                                 </p>
                             </div>
                         </div>
-                        <div className="flex flex-wrap gap-2">
-                            {vacancy.skills.map((skill, i) => (
-                                <span
-                                    key={i}
-                                    className="bg-teal-100 text-teal-700 text-xs px-3 py-1 rounded"
+                        <ul className="flex gap-3">
+                            {vacancy.skills.map((skill: string) => (
+                                <li
+                                    key={skill}
+                                    className="bg-gray-200 px-3 py-1 rounded"
                                 >
                                     {skill}
-                                </span>
+                                </li>
                             ))}
-                        </div>
+                        </ul>
                     </div>
                 ))}
             </div>
